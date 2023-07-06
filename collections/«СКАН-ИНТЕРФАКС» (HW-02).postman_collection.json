@@ -1,0 +1,285 @@
+{
+	"info": {
+		"_postman_id": "44cd5969-b797-40b8-80d3-d41ec296aca2",
+		"name": "«СКАН-ИНТЕРФАКС» (HW-02)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27118167"
+	},
+	"item": [
+		{
+			"name": "Auth + Get Token key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"   pm.response.to.have.status(200);\r",
+							" });\r",
+							"if (pm.response.code == 200) {\r",
+							"        pm.test(\"Полученный токен записан в token_auth\", function () {\r",
+							"           let jsonData = JSON.parse(responseBody)\r",
+							"           pm.collectionVariables.set(\"token_auth\", jsonData.accessToken);\r",
+							"    });\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"login\": \"{{test_login}}\",\r\n    \"password\": \"{{test_password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/account/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"account",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check balance",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code == 200) {\r",
+							"    pm.test(\"Баланс записан в переменную current_balance\", function () {\r",
+							"    let jsonData = JSON.parse(responseBody)\r",
+							"    pm.collectionVariables.set(\"current_balance\", jsonData.balance);\r",
+							"});\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/account/balance",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"account",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get publications",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code == 200) {\r",
+							"    pm.test(\"Записаны первые три публикации в переменные subjects_name\", function () {\r",
+							"           let jsonData = JSON.parse(responseBody)\r",
+							"           pm.collectionVariables.set(\"subjects_name1\", jsonData.subjects[0].name);\r",
+							"           pm.collectionVariables.set(\"subjects_name2\", jsonData.subjects[1].name);\r",
+							"           pm.collectionVariables.set(\"subjects_name3\", jsonData.subjects[2].name);\r",
+							"    });\r",
+							"}\r",
+							"if (pm.response.code == 200) {\r",
+							"pm.test(\"В переменную subjects_total записано общее количество публикаций\", function () {\r",
+							"           let jsonData = JSON.parse(responseBody)\r",
+							"           pm.collectionVariables.set(\"subjects_total\", jsonData.totalCount);\r",
+							"    });    \r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/entities/subjects?index=0&pageSize=3",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"entities",
+						"subjects"
+					],
+					"query": [
+						{
+							"key": "index",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get names of news agencies",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"if (pm.response.code = 200) {\r",
+							"    pm.test(\"Полученные наименования новостных агенств записаны в переменные \", function () {\r",
+							"           let jsonData = JSON.parse(responseBody)\r",
+							"           pm.collectionVariables.set(\"news_agent_1\", jsonData[0].ok.source.name);\r",
+							"           pm.collectionVariables.set(\"news_agent_2\", jsonData[1].ok.source.name);\r",
+							" });           \r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ids\": [{{ID1}},{{ID2}}]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/documents",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"documents"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token_auth}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://gateway.scan-interfax.ru/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "test_login",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "test_password",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "token_auth",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "current_balance",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "subjects_name1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "subjects_name2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "subjects_name3",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "subjects_total",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "news_agent_1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "news_agent_2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ID1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ID2",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
